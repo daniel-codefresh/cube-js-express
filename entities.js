@@ -1,6 +1,7 @@
 const constants = {
     BUILD: "build",
-    ACCOUNT: "account"
+    ACCOUNT: "account",
+    CONCURRENCY: "concurrency"
 }
 
 module.exports = constants;

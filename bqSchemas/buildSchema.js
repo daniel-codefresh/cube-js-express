@@ -1,11 +1,12 @@
 module.exports = {
     namespace: 'etl',
-    tableName: 'BuildsEnd',
+    tableName: 'BuildsEnd_WithPackInfo',
     schema: [
         { name: 'updatedAt', type: 'TIMESTAMP' },
         { name: 'buildId', type: 'STRING' },
         { name: 'accountId', type: 'STRING' },
         { name: 'pack', type: 'STRING' },
+        { name: 'packName', type: 'STRING' },
         { name: 'isFinal', type: 'BOOL' },
         { name: 'status', type: 'STRING' },
         { name: 'buildMinutes', type: 'NUMERIC' },

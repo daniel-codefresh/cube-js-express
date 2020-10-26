@@ -15,6 +15,7 @@
     "express-http-proxy": "^1.6.2",
     "hbs": "~4.0.4",
     "http-errors": "~1.6.3",
+    "lodash": "^4.17.20",
     "morgan": "~1.9.1"
   }
 }

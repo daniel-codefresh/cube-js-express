@@ -1,10 +1,12 @@
-const source = require('../db');
-const { entities } = source;
+const sourceEntity = require('../sourceEntities');
 
-Object.values(entities).forEach(({ namespace, tableName, measures, dimensions }) => {
+Object.values(sourceEntity.cubeEntities).forEach(({ namespace, tableName, measures, dimensions, segments, preAggregations }) => {
     cube(tableName, {
+        // sql: `select * from ${namespace}.${tableName}`,
         sql: `select * from ${namespace}.${tableName} where ${USER_CONTEXT.id.filter('accountId')}`,
         measures,
         dimensions,
+        segments,
+        preAggregations
     });
 });
