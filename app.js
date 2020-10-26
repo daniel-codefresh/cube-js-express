@@ -21,7 +21,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// REDIS_URL=;CUBEJS_DB_BQ_PROJECT_ID=codefresh-dev-170600;CUBEJS_DB_TYPE=bigquery;CUBEJS_API_SECRET=0d656923e9bf6738e9ea239a9d8ca1f4ea294ca6d2131b234471c29c5c209059a8a6a6a62f25e692742de81e5ea6c55e0a3b8a986bae9a289edc21a9feb0b04c;CUBEJS_DB_BQ_KEY_FILE=express-analytics-dashboard/aim.json;NODE_ENV=production
 const cubejsBasePath = '/cubejs-api';
 // let count = 0;
 CubejsServerCore.create({
