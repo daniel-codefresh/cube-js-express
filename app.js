@@ -24,89 +24,89 @@ app.use(express.static(path.join(__dirname, 'public')));
 const cubejsBasePath = '/cubejs-api';
 // let count = 0;
 CubejsServerCore.create({
-  basePath: cubejsBasePath,
-  driverFactory: ({ dataSource }) => new sourceEntity.Driver({ database: dataSource }),
-  checkAuth: req => {
-    // if (!req.authInfo) {
-      req.authInfo = {u: {id: "5672d8deb6724b6e359adf62"}}
+    basePath: cubejsBasePath,
+    driverFactory: ({ dataSource }) => new sourceEntity.Driver({ database: dataSource }),
+    checkAuth: req => {
+        // if (!req.authInfo) {
+        req.authInfo = { u: { id: "5672d8deb6724b6e359adf62" } }
+        // }
+    },
+    // queryTransformer: (query, { authInfo }) => {
+    //   if (authInfo.id) {
+    //     query.filters.push({
+    //       member: `${authInfo.targetCubeName}.accountId`,
+    //       operator: 'equals',
+    //       values: [authInfo.id]
+    //     })
+    //   }
+    //   console.log("/**************************************************************************************/\n")
+    //   console.log('query:\n',query)
+    //   console.log('id:', authInfo.id)
+    //   console.log("/**************************************************************************************/\n")
+    //
+    //   return query;
     // }
-  },
-  // queryTransformer: (query, { authInfo }) => {
-  //   if (authInfo.id) {
-  //     query.filters.push({
-  //       member: `${authInfo.targetCubeName}.accountId`,
-  //       operator: 'equals',
-  //       values: [authInfo.id]
-  //     })
-  //   }
-  //   console.log("/**************************************************************************************/\n")
-  //   console.log('query:\n',query)
-  //   console.log('id:', authInfo.id)
-  //   console.log("/**************************************************************************************/\n")
-  //
-  //   return query;
-  // }
 }).initApp(app);
 
 function redirect(app, path, req, res, transformer) {
-  req.url = path;
-  req.originalUrl = path;
-  const originalJson = res.json.bind(res);
-  res.json = (str) => {
-    originalJson(transformer(str));
-  };
-  app(req, res);
+    req.url = path;
+    req.originalUrl = path;
+    const originalJson = res.json.bind(res);
+    res.json = (str) => {
+        originalJson(transformer(str));
+    };
+    app(req, res);
 }
 
 // TODO: add authentication check
 app.use('/workflow/analytics', async (req, res, next) => {
-  try {
-    // ++count;
-    // const authenticatedEntityId = count % 2 === 0 ? "5ddc647abe859ab8b2a8edda" : "5672d8deb6724b6e359adf62";
+    try {
+        // ++count;
+        // const authenticatedEntityId = count % 2 === 0 ? "5ddc647abe859ab8b2a8edda" : "5672d8deb6724b6e359adf62";
 
-    const {cubeName, ...query} = sourceEntity.mapQueryToCubeQuery(req.query, req.id);
-    // req.authInfo = { targetCubeName: cubeName, id: authenticatedEntityId };
-    req.query = query;
+        const { cubeName, ...query } = sourceEntity.mapQueryToCubeQuery(req.query, req.id);
+        // req.authInfo = { targetCubeName: cubeName, id: authenticatedEntityId };
+        req.query = query; // cube.js expects to get a parsed query in req.query
 
-    const cubeEndpoint = `${cubejsBasePath}/v1/load`;
-    redirect(app, cubeEndpoint, req, res, (cubePayload) => {
-      if (!cubePayload.results) return cubePayload;
+        const cubeEndpoint = `${cubejsBasePath}/v1/load`;
+        redirect(app, cubeEndpoint, req, res, (cubePayload) => {
+            if (!cubePayload.results) return cubePayload;
 
-      const {data} = cubePayload.results[0];
-      return data.map(record => transformRecord(record));
-    });
-  } catch (e) {
-    next(e)
-  }
+            return _.get(cubePayload, 'results[0].data', [])
+                .map(record => transformRecord(record));
+        });
+    } catch (e) {
+        next(e)
+    }
 });
 
 function transformRecord(record) {
-  const oldKeys = Object.keys(record);
-  const newKeys = oldKeys.map(key => _.last(key.split('.')));
-  const transformed = {};
-  newKeys.forEach((key, index) => {
-    transformed[key] = record[oldKeys[index]]
-  })
-  return transformed;
+    const oldKeys = Object.keys(record);
+    const newKeys = oldKeys.map(key => _.last(key.split('.')));
+    const transformed = {};
+    newKeys.forEach((key, index) => {
+        transformed[key] = record[oldKeys[index]]
+    })
+    return transformed;
 }
 
 /**************************************************************************************/
 app.use('/', indexRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
+app.use(function (req, res, next) {
+    next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+app.use(function (err, req, res, next) {
+    // set locals, only providing error in development
+    res.locals.message = err.message;
+    res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+    // render the error page
+    res.status(err.status || 500);
+    res.render('error');
 });
 
 module.exports = app;

@@ -1,7 +1,15 @@
 const BqEntity = require('./BqEntity');
-const buildSchema = require('../bqSchemas/buildSchema');
 
 class Build extends BqEntity {
+    get cubeSchema() {
+        return {
+            measures: this.measures,
+            dimensions: this.dimensions,
+            segments: this.segments,
+            preAggregations: this.preAggregations,
+        }
+    }
+
     get measures() {
         return {
             count: {
@@ -19,21 +27,21 @@ class Build extends BqEntity {
         return {
             'sumBuildMinsAllPacks': {
                 "measures": [
-                    `${this.tableName}.sumBuildMins`
+                    `${this.entityName}.sumBuildMins`
                 ],
                 "dimensions": [
-                    `${this.tableName}.packName`
+                    `${this.entityName}.packName`
                 ],
                 "segments": [
-                    `${this.tableName}.packNotEmpty`
+                    `${this.entityName}.packNotEmpty`
                 ],
                 "order": {}
             }
         }
     }
 
-    get timeDimension() {
-        return `${this.tableName}.day`;
+    get mainTimeDimension() {
+        return `${this.entityName}.day`;
     }
 
     get segments() {
@@ -63,4 +71,4 @@ class Build extends BqEntity {
 }
 
 
-module.exports = new Build(buildSchema);
+module.exports = Build;

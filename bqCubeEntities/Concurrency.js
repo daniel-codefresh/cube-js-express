@@ -1,7 +1,15 @@
 const BqEntity = require('./BqEntity');
-const concurrencySchema = require('../bqSchemas/concurrencySchema');
 
 class Concurrency extends BqEntity {
+    get cubeSchema() {
+        return {
+            measures: this.measures,
+            dimensions: this.dimensions,
+            segments: this.segments,
+            preAggregations: this.preAggregations,
+        }
+    }
+
     get measures() {
         return {
             maxConcurrency: {
@@ -37,60 +45,60 @@ class Concurrency extends BqEntity {
         return {
             'maxConcurrency': {
                 "measures": [
-                    `${this.tableName}.maxConcurrency`
+                    `${this.entityName}.maxConcurrency`
                 ],
                 "order": {}
             },
             'concurrencyAllPacks': {
                 "measures": [
-                    `${this.tableName}.maxConcurrency`
+                    `${this.entityName}.maxConcurrency`
                 ],
                 "dimensions": [
-                    `${this.tableName}.packName`,
+                    `${this.entityName}.packName`,
                 ],
                 "order": {}
             },
             'concurrencyInSmall': {
                 "measures": [
-                    `${this.tableName}.maxConcurrency`,
-                    `${this.tableName}.availability`
+                    `${this.entityName}.maxConcurrency`,
+                    `${this.entityName}.availability`
                 ],
                 "segments": [
-                    `${this.tableName}.smallPack`
+                    `${this.entityName}.smallPack`
                 ],
             },
             'concurrencyInMedium': {
                 "measures": [
-                    `${this.tableName}.maxConcurrency`,
-                    `${this.tableName}.availability`
+                    `${this.entityName}.maxConcurrency`,
+                    `${this.entityName}.availability`
                 ],
                 "segments": [
-                    `${this.tableName}.mediumPack`
+                    `${this.entityName}.mediumPack`
                 ],
             },
             'concurrencyInLarge': {
                 "measures": [
-                    `${this.tableName}.maxConcurrency`,
-                    `${this.tableName}.availability`
+                    `${this.entityName}.maxConcurrency`,
+                    `${this.entityName}.availability`
                 ],
                 "segments": [
-                    `${this.tableName}.largePack`
+                    `${this.entityName}.largePack`
                 ],
             },
             'concurrencyInHybrid': {
                 "measures": [
-                    `${this.tableName}.maxConcurrency`,
-                    `${this.tableName}.availability`
+                    `${this.entityName}.maxConcurrency`,
+                    `${this.entityName}.availability`
                 ],
                 "segments": [
-                    `${this.tableName}.hybridPack`
+                    `${this.entityName}.hybridPack`
                 ],
             }
         }
     }
 
-    get timeDimension() {
-        return `${this.tableName}.ts`;
+    get mainTimeDimension() {
+        return `${this.entityName}.ts`;
     }
 
     get preAggregations() {
@@ -136,4 +144,4 @@ class Concurrency extends BqEntity {
 }
 
 
-module.exports = new Concurrency(concurrencySchema);
+module.exports = Concurrency;

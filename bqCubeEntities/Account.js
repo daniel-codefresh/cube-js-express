@@ -1,5 +1,4 @@
 const BqEntity = require('./BqEntity');
-const accountSchema = require('../bqSchemas/accountSchema');
 
 class Account extends BqEntity {
     get measures() {
@@ -21,4 +20,4 @@ class Account extends BqEntity {
 
 }
 
-module.exports = new Account(accountSchema);
+module.exports = Account;

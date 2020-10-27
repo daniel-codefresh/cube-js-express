@@ -1,8 +1,9 @@
 class BqEntity {
-    constructor({namespace, tableName, schema}) {
+    constructor({namespace, tableName, schema}, entityName) {
         this.tableName = tableName;
         this.namespace = namespace;
         this.schema = schema;
+        this.entityName = entityName;
     }
 
     get typeDictionary() {
